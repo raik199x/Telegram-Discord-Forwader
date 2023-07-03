@@ -1,5 +1,7 @@
 # Telegram to Discord Message Bot — Forward Telegram Messages to Discord
 
+This is a fork of [kkapuria3/Telegram-To-Discord-Forward-Bot](https://github.com/kkapuria3/Telegram-To-Discord-Forward-Bot)
+
 ## Description
 
 Forwardgram is a free and open source, telegram to discord message bot. It enables one to forward messages from Multiple Telegram channels to one (or more) Telegram/Discord channels of your own. This python bot monitors multiple telegram channels. When a new message/entity is sent, it will parse the response and forward it to a discord channel using your own personalized bot. It will also forward the same message to your own Telegram channel.
@@ -9,6 +11,13 @@ Forwardgram is a free and open source, telegram to discord message bot. It enabl
 1. Bot now can forward messages with multiple images and videos
 2. Bot cannot re-forward messages to telegram
 3. By default messages forwards only to one discord channel, but you can add more in code
+
+### To-do list
+
+? - dunno if i really decide to do this
+
+- [ ] automatic ads detection ?
+- [ ] multiple discord channels as default (or minimum preparation)
 
 ### Dependencies
 
@@ -26,7 +35,7 @@ Forwardgram is a free and open source, telegram to discord message bot. It enabl
 
 ### First Run and Usage
 
-1. Change the name of `template-config.yaml` to `config.yml`
+1. Change the name of `template-config.yaml` to `config.yaml`
 
 #### Filling `config.yml` file
 
@@ -48,8 +57,9 @@ Example of what you need to find in json dump.
 
 #### Editing `discord` folder
 
-* Whenever you add and delete discord channels in `config.yml`; `discord/botRunner.py` and `discord/channelHandlers.py` will have to be updated. If you know basic python you will understand the code.
-* Multiple send telegram channels in `config.yml` can added without any code change.
+- Whenever you add and delete discord channels in `config.yaml`; `discord/botRunner.py` and `discord/channelHandlers.py` will have to be updated. If you know basic python you will understand the code.
+
+- Multiple send telegram channels in `config.yaml` can added without any code change.
 
 ### Running
 
