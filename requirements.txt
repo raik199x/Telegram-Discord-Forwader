@@ -1,0 +1,5 @@
+colorlog==6.7.0
+PyYAML==6.0
+Telethon==1.28.5
+urllib3==1.26.5
+discord.py==1.7.3

@@ -1,0 +1,6 @@
+DirectoryTempFiles = "temp/"
+FileTempToSend = "to_send.txt"
+FileTempMessage = "message.txt"
+FileTempChannelName = "channel_name.txt"
+FlagAds = "ADS"
+FlagNoChannel = "NO_CHANNEL"
