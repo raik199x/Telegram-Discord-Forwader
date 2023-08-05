@@ -1,7 +1,7 @@
 import discord
 from Bot.logger.log import logger
 from Bot.shared.variables import *
-from Bot.discord.channelHandlers import MessageModifiers
+from Bot.discord.channelHandlers import MessageModifiers, RetranslateOptions
 from os import path
 from shutil import rmtree
 import asyncio
@@ -45,7 +45,11 @@ async def send_media(channel):
 
 
 async def send_message(channel, message):
-    await channel.send(message)
+    try:
+        await channel.send(message)
+    except discord.errors.HTTPException:
+        logger.error("Bad request, message dropped")
+        return
     logger.info("Sent message")
 
 
@@ -57,7 +61,11 @@ async def start_discord_client(config):
 
     async def on_ready():
         logger.info(f'Discord runner: logged in as {discord_client.user}')
-        channel = discord_client.get_channel(config["discord_1_channel"])
+
+        with open(DirectoryTempFiles + FileTempChannelName, 'r') as f:
+            channel_name = f.read()
+
+        channel = discord_client.get_channel(config[RetranslateOptions[channel_name]])
         needToSendMessage = False
         # first we modify message and check if there is ads
         # for that we first need to check if there is a message to send
@@ -80,7 +88,10 @@ async def start_discord_client(config):
                 await discord_client.close()
 
         # if message is ok, we first send media
-        await send_media(channel)
+        try:
+            await send_media(channel)
+        except discord.errors.HTTPException:
+            logger.warning("Discord runner: Could not send media due it's size")
         # and then we send message
         if needToSendMessage:
             await send_message(channel, message)

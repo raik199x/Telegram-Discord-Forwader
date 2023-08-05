@@ -5,17 +5,14 @@ def FreeGamingModifier(message):
     if message.find("Free Gaming - подписаться.") != -1:
         message = message.replace("Free Gaming - подписаться.", "")
 
-    message += "\n\n#Giveaway"
     return message
 
 
 def ChannelSendModifier(message):
-    message += "\n\n#Admin-message"
     return message
 
 
 def PesdusaModifier(message):
-    message += "\n\n#Pesdusa"
     return message
 
 
@@ -29,12 +26,37 @@ def InternetModifier(message):
     if message.find("Трейдер") != -1:
         return FlagAds
 
-    message += "\n\n#Internet"
     return message
+
+
+def Pekarn9Modifier(message):
+    lower_message = message.lower()
+    if lower_message.find("яндекс маркет") != -1:
+        return FlagAds
+    if lower_message.find("яндекс.маркет") != -1:
+        return FlagAds
+    if lower_message.find("wildberries") != -1:
+        return FlagAds
+    if lower_message.find("https://t.me/") != -1:
+        return FlagAds
+    if lower_message.find("ozon") != -1:
+        return FlagAds
+
+    return message
+
 
 MessageModifiers = {
     "Free Gaming — Раздача игр": FreeGamingModifier,
     "channel_send": ChannelSendModifier,
     "Пездуза": PesdusaModifier,
-    "!internet!": InternetModifier
+    "!internet!": InternetModifier,
+    "Пекарня": Pekarn9Modifier
+}
+
+RetranslateOptions = {
+    "Free Gaming — Раздача игр": "giveaway_channel",
+    "channel_send": "admin_channel",
+    "Пездуза": "pesduza",
+    "!internet!": "internet",
+    "Пекарня": "pekarn9_channel"
 }

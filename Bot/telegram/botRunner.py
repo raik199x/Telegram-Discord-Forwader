@@ -1,7 +1,8 @@
 from telethon import TelegramClient, events, errors
 from telethon.tl.types import InputChannel, MessageMediaPhoto, MessageMediaDocument
-from Bot.logger.log import logger
 from os import path
+from random import randint
+from Bot.logger.log import logger
 from Bot.shared.variables import *
 from Bot.discord.botRunner import start_discord_bot
 from Bot.telegram.fileOperations import *
@@ -14,14 +15,14 @@ def file_race_condition(channelName):
     # First thing when we got lock, we need to check if some thread is already preparing message
     if not path.exists(DirectoryTempFiles + FileTempChannelName):
         save_channel_name_to_file(channelName)
-        return True
+        return "Master"
     else:  # otherwise we need to check if we are working with the same channel
         with open(DirectoryTempFiles + FileTempChannelName, 'r') as f:
             channel_name = f.read()
         if not channel_name == channelName:
-            return False
+            return "Wait"
         else:
-            return True
+            return "Slave"
 
 
 async def wait_for_threads():
@@ -68,13 +69,20 @@ def start_telegram_client(config):
 
     @client.on(events.NewMessage(chats=input_channels_entities))
     async def handler(event):
+        threadState = "none" # one of threads become master and will send message to discord
+
         await lock.acquire()
         # If thread see a file with channel name, it means that some other thread is already working with it
-        while file_race_condition(event.chat.title) == False: # so we wait until it is finished (if we come from different channel)
+        
+        while True: # so we wait until it is finished (if we come from different channel)
+            threadState = file_race_condition(event.chat.title)
+            if threadState == "Master" or threadState == "Slave":
+                break
+
             lock.release()
             logger.info("Telegram runner: thread from channel" +
                         event.chat.title + "is waiting for lock")
-            await asyncio.sleep(3)
+            await asyncio.sleep(randint(1, 15))
             await lock.acquire()
 
         ThreadStatus.append("0") # 0 means that thread is working
@@ -99,8 +107,6 @@ def start_telegram_client(config):
                     parsed_response += '\n' + url
 
         # saving image from message (if there is any)
-        # locking since there might be only one thread that can write file "to_send.txt" at the same time
-        await lock.acquire()
         if event.message.media:
             media = event.message.media
             # If there's a single media object, handle it directly
@@ -111,10 +117,9 @@ def start_telegram_client(config):
 
         if parsed_response != "":
             save_message_to_file(parsed_response)
-        lock.release()
 
         ThreadStatus[ThreadId] = "1"
-        if not ThreadId == 0:  # if it is not first thread, we simply leave it
+        if not threadState == "Master":  # if it is not master thread, we simply leave it
             logger.info("Telegram runner: thread from channel" + event.chat.title +
                         " with id " + str(ThreadId) + " of " + str(len(ThreadStatus)-1) + " is finished")
             return
