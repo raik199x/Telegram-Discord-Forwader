@@ -81,10 +81,12 @@ async def start_discord_client(config):
         if needToSendMessage:
             message = check_for_ads(message)
             if message == FlagAds:
+                rmtree(DirectoryTempFiles)
                 await discord_client.close()
 
             elif message == FlagNoChannel:
                 logger.error("Discord runner: Could not find modifier for channel")
+                rmtree(DirectoryTempFiles)
                 await discord_client.close()
 
         # if message is ok, we first send media
